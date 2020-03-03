@@ -22,7 +22,6 @@ from tensorboardX import SummaryWriter
 from tqdm import tqdm
 from ujson import load as json_load
 from util import collate_fn, SQuAD
-from transformers import BertForQuestionAnswering, BertConfig
 
 
 def main(args):
@@ -42,30 +41,20 @@ def main(args):
     torch.cuda.manual_seed_all(args.seed)
 
     # Get embeddings
-    # log.info('Loading embeddings...')
-    # word_vectors = util.torch_from_json(args.word_emb_file)
+    log.info('Loading embeddings...')
+    word_vectors = util.torch_from_json(args.word_emb_file)
 
     # Get model
     log.info('Building model...')
-    # model = BiDAF(word_vectors=word_vectors,
-    #               hidden_size=args.hidden_size,
-    #               drop_prob=args.drop_prob)
-
-    # config = BertConfig(args.config_file)
-
-    model = BertForQuestionAnswering.from_pretrained('bert-base-uncased')
-    # config = BertConfig("bertmodels/bert_config.json")
-    # print(config)
-    # model = BertForQuestionAnswering(config)
-    model.load_state_dict(torch.load("./bertmodels/pytorch_model.bin"))
-
+    model = BiDAF(word_vectors=word_vectors,
+                  hidden_size=args.hidden_size,
+                  drop_prob=args.drop_prob)
     model = nn.DataParallel(model, args.gpu_ids)
     if args.load_path:
         log.info(f'Loading checkpoint from {args.load_path}...')
         model, step = util.load_model(model, args.load_path, args.gpu_ids)
     else:
         step = 0
-
     model = model.to(device)
     model.train()
     ema = util.EMA(model, args.ema_decay)
@@ -90,7 +79,6 @@ def main(args):
                                    shuffle=True,
                                    num_workers=args.num_workers,
                                    collate_fn=collate_fn)
-
     dev_dataset = SQuAD(args.dev_record_file, args.use_squad_v2)
     dev_loader = data.DataLoader(dev_dataset,
                                  batch_size=args.batch_size,
@@ -107,27 +95,17 @@ def main(args):
         log.info(f'Starting epoch {epoch}...')
         with torch.enable_grad(), \
                 tqdm(total=len(train_loader.dataset)) as progress_bar:
-            for input_ids, attention_mask, token_type_ids, y1, y2, ids in train_loader:
+            for cw_idxs, cc_idxs, qw_idxs, qc_idxs, y1, y2, ids in train_loader:
                 # Setup for forward
-                input_ids = input_ids.to(device)
-                attention_mask = attention_mask.to(device)
-                token_type_ids = token_type_ids.to(device)
-                y1, y2 = y1.to(device), y2.to(device)
-                batch_size = input_ids.size(0)
+                cw_idxs = cw_idxs.to(device)
+                qw_idxs = qw_idxs.to(device)
+                batch_size = cw_idxs.size(0)
                 optimizer.zero_grad()
 
-                # # Forward
-                # print("in train")
-                # print(input_ids.shape)
-                # print(attention_mask.shape)
-                # print(token_type_ids.shape)
-                loss, log_p1, log_p2 = model(input_ids=input_ids,
-                    attention_mask=attention_mask,
-                    token_type_ids=token_type_ids, 
-                    start_positions=y1,
-                    end_positions=y2)
-                loss = loss.mean()
-                # loss = F.nll_loss(log_p1, y1) + F.nll_loss(log_p2, y2)
+                # Forward
+                log_p1, log_p2 = model(cw_idxs, qw_idxs)
+                y1, y2 = y1.to(device), y2.to(device)
+                loss = F.nll_loss(log_p1, y1) + F.nll_loss(log_p2, y2)
                 loss_val = loss.item()
 
                 # Backward
@@ -186,20 +164,16 @@ def evaluate(model, data_loader, device, eval_file, max_len, use_squad_v2):
         gold_dict = json_load(fh)
     with torch.no_grad(), \
             tqdm(total=len(data_loader.dataset)) as progress_bar:
-        for input_ids, attention_mask, token_type_ids, y1, y2, ids in data_loader:
+        for cw_idxs, cc_idxs, qw_idxs, qc_idxs, y1, y2, ids in data_loader:
             # Setup for forward
-            input_ids = input_ids.to(device)
-            attention_mask = attention_mask.to(device)
-            token_type_ids = token_type_ids.to(device)
-            batch_size = input_ids.size(0)
+            cw_idxs = cw_idxs.to(device)
+            qw_idxs = qw_idxs.to(device)
+            batch_size = cw_idxs.size(0)
 
             # Forward
-            loss, log_p1, log_p2 = model(input_ids=input_ids,
-                    attention_mask=attention_mask,
-                    token_type_ids=token_type_ids)
-            loss = loss.mean()
-            # y1, y2 = y1.to(device), y2.to(device)
-            # loss = F.nll_loss(log_p1, y1) + F.nll_loss(log_p2, y2)
+            log_p1, log_p2 = model(cw_idxs, qw_idxs)
+            y1, y2 = y1.to(device), y2.to(device)
+            loss = F.nll_loss(log_p1, y1) + F.nll_loss(log_p2, y2)
             nll_meter.update(loss.item(), batch_size)
 
             # Get F1 and EM scores

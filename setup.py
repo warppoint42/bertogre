@@ -23,6 +23,9 @@ from collections import Counter
 from subprocess import run
 from tqdm import tqdm
 from zipfile import ZipFile
+from transformers import BertTokenizer
+from squad_convert import squad_convert_examples_to_features
+from transformers.data.processors.squad import SquadV2Processor
 
 
 def download_url(url, output_path, show_progress=True):
@@ -51,8 +54,9 @@ def url_to_data_path(url):
 def download(args):
     downloads = [
         # Can add other downloads here (e.g., other word vectors)
-        ('GloVe word vectors', args.glove_url),
+        # ('GloVe word vectors', args.glove_url),
     ]
+
 
     for name, url in downloads:
         output_path = url_to_data_path(url)
@@ -87,8 +91,74 @@ def convert_idx(text, tokens):
         current += len(token)
     return spans
 
+def process_file(args, filepath, record_file, eval_file, message, data_type, processor, tokenizer):
+    print(f"Pre-processing {data_type} examples...")
+    head, tail = os.path.split(filepath)
+    if data_type == "train":
+        examples = processor.get_train_examples(head, tail)
+    else:
+        examples = processor.get_dev_examples(head, tail)
+    features= squad_convert_examples_to_features(
+            examples=examples,
+            tokenizer=tokenizer,
+            max_seq_length=args.max_seq_length,
+            doc_stride=args.doc_stride,
+            max_query_length=args.max_query_length,
+            is_training=data_type == "train",
+            # return_dataset="pt",
+            threads=args.threads,
+        )
+    all_input_ids = [f.input_ids for f in features]
+    all_attention_mask = [f.attention_mask for f in features]
+    all_token_type_ids = [f.token_type_ids for f in features]
+    all_unique_id = [f.unique_id for f in features]
+    y1s = [-1 if f.is_impossible else f.start_position for f in features]
+    y2s = [-1 if f.is_impossible else f.end_position for f in features]
 
-def process_file(filename, data_type, word_counter, char_counter):
+    np.savez(record_file,
+             input_ids = np.array(all_input_ids),
+             attention_mask = np.array(all_attention_mask),
+             token_type_ids = np.array(all_token_type_ids),
+             y1s=np.array(y1s),
+             y2s=np.array(y2s),
+             ids=np.array(all_unique_id),
+             )
+
+
+    eval_ex = gen_examples(filepath)
+    save(eval_file, eval_ex, message=message)
+
+
+
+def gen_examples(filepath):
+    eval_examples = {}
+    total = 0
+    with open(filepath, "r") as fh:
+        source = json.load(fh)
+        for article in tqdm(source["data"]):
+            for para in article["paragraphs"]:
+                context = para["context"].replace(
+                    "''", '" ').replace("``", '" ')
+                context_tokens = word_tokenize(context)
+                spans = convert_idx(context, context_tokens)
+                for qa in para["qas"]:
+                    total += 1
+                    ques = qa["question"].replace(
+                        "''", '" ').replace("``", '" ')
+                    answer_texts = []
+                    for answer in qa["answers"]:
+                        answer_text = answer["text"]
+                        answer_texts.append(answer_text)
+                    eval_examples[str(total)] = {"context": context,
+                                                 "question": ques,
+                                                 "spans": spans,
+                                                 "answers": answer_texts,
+                                                 "uuid": qa["id"]}
+    return eval_examples
+
+
+
+def process_file1(filename, data_type, word_counter, char_counter, tokenizer = None):
     print(f"Pre-processing {data_type} examples...")
     examples = []
     eval_examples = {}
@@ -130,13 +200,28 @@ def process_file(filename, data_type, word_counter, char_counter):
                         y1, y2 = answer_span[0], answer_span[-1]
                         y1s.append(y1)
                         y2s.append(y2)
+
+                    processor = SquadV2Processor()
+                    # print()
+                    # print(ques)
+                    # print(context)
+                    qq = tokenizer.tokenize(ques)
+                    cc = tokenizer.tokenize(context)
+                    print(len(qq))
+                    print(qq)
+                    print(len(cc))
+                    print(cc)
+                    input_ids = tokenizer.encode(ques, context)
+                    token_type_ids = [0 if i <= input_ids.index(102) else 1 for i in range(len(input_ids))]
                     example = {"context_tokens": context_tokens,
                                "context_chars": context_chars,
                                "ques_tokens": ques_tokens,
                                "ques_chars": ques_chars,
                                "y1s": y1s,
                                "y2s": y2s,
-                               "id": total}
+                               "id": total,
+                               "input_ids" : input_ids,
+                               "token_type_ids" : token_type_ids}
                     examples.append(example)
                     eval_examples[str(total)] = {"context": context,
                                                  "question": ques,
@@ -327,13 +412,13 @@ def build_features(args, examples, data_type, out_file, word2idx_dict, char2idx_
         ids.append(example["id"])
 
     np.savez(out_file,
-             context_idxs=np.array(context_idxs),
-             context_char_idxs=np.array(context_char_idxs),
-             ques_idxs=np.array(ques_idxs),
-             ques_char_idxs=np.array(ques_char_idxs),
+             input_ids = input_ids,
+             attention_mask = attention_mask,
+             token_type_ids = token_type_ids,
              y1s=np.array(y1s),
              y2s=np.array(y2s),
-             ids=np.array(ids))
+             ids=np.array(ids),
+             )
     print(f"Built {total} / {total_} instances of features in total")
     meta["total"] = total
     return meta
@@ -348,31 +433,69 @@ def save(filename, obj, message=None):
 
 def pre_process(args):
     # Process training set and use it to decide on the word/character vocabularies
-    word_counter, char_counter = Counter(), Counter()
-    train_examples, train_eval = process_file(args.train_file, "train", word_counter, char_counter)
-    word_emb_mat, word2idx_dict = get_embedding(
-        word_counter, 'word', emb_file=args.glove_file, vec_size=args.glove_dim, num_vectors=args.glove_num_vecs)
-    char_emb_mat, char2idx_dict = get_embedding(
-        char_counter, 'char', emb_file=None, vec_size=args.char_dim)
+    # word_counter, char_counter = Counter(), Counter()
+
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    processor = SquadV2Processor()
+
+    # ret = gen_examples(args.dev_file)
+    # print(ret)
+    process_file(args, args.dev_file, args.dev_record_file, args.dev_eval_file, "dev eval",
+        "dev", processor, tokenizer)
+    process_file(args, args.train_file, args.train_record_file, args.train_eval_file, "train eval",
+        "train", processor, tokenizer)
+    if args.include_test_examples:
+        process_file(args, args.test_file, args.test_record_file, args.test_eval_file, "test eval",
+            "test", processor, tokenizer)
+    # dev_examples, dev_eval = process_file(args, args.dev_file, "dev", processor, tokenizer)
+
+
+    # head, tail = os.path.split(args.dev_file)
+    # train_ex = processor.get_train_examples(head, tail)
+    # features= squad_convert_examples_to_features(
+    #         examples=train_ex,
+    #         tokenizer=tokenizer,
+    #         max_seq_length=args.max_seq_length,
+    #         doc_stride=args.doc_stride,
+    #         max_query_length=args.max_query_length,
+    #         is_training=True,
+    #         # return_dataset="pt",
+    #         threads=args.threads,
+    #     )
+    # all_input_ids = [f.input_ids for f in features]
+    # all_attention_mask = [f.attention_mask for f in features]
+    # all_token_type_ids = [f.token_type_ids for f in features]
+    # all_unique_id = [f.unique_id for f in features]
+    # print(all_input_ids)
+    # print(all_attention_mask)
+    # print(all_token_type_ids)
+    # print(all_unique_id)
+    # exit()
+
+    # train_examples, train_eval = process_file(args.train_file, "train", word_counter, char_counter, tokenizer)
+    # word_emb_mat, word2idx_dict = get_embedding(
+    #     word_counter, 'word', emb_file=args.glove_file, vec_size=args.glove_dim, num_vectors=args.glove_num_vecs)
+    # char_emb_mat, char2idx_dict = get_embedding(
+    #     char_counter, 'char', emb_file=None, vec_size=args.char_dim)
 
     # Process dev and test sets
-    dev_examples, dev_eval = process_file(args.dev_file, "dev", word_counter, char_counter)
-    build_features(args, train_examples, "train", args.train_record_file, word2idx_dict, char2idx_dict)
-    dev_meta = build_features(args, dev_examples, "dev", args.dev_record_file, word2idx_dict, char2idx_dict)
-    if args.include_test_examples:
-        test_examples, test_eval = process_file(args.test_file, "test", word_counter, char_counter)
-        save(args.test_eval_file, test_eval, message="test eval")
-        test_meta = build_features(args, test_examples, "test",
-                                   args.test_record_file, word2idx_dict, char2idx_dict, is_test=True)
-        save(args.test_meta_file, test_meta, message="test meta")
+    # dev_examples, dev_eval = process_file(args.dev_file, "dev", word_counter, char_counter, tokenizer)
+    # build_features(args, train_examples, "train", args.train_record_file, word2idx_dict, char2idx_dict)
+    # dev_meta = build_features(args, dev_examples, "dev", args.dev_record_file, word2idx_dict, char2idx_dict)
+    # if args.include_test_examples:
+    #     test_examples, test_eval = process_file(args.test_file, "test", word_counter, char_counter, tokenizer)
+    #     save(args.test_eval_file, test_eval, message="test eval")
+        # test_meta = build_features(args, test_examples, "test",
+        #                            args.test_record_file, word2idx_dict, char2idx_dict, is_test=True)
+        # save(args.test_meta_file, test_meta, message="test meta")
 
-    save(args.word_emb_file, word_emb_mat, message="word embedding")
-    save(args.char_emb_file, char_emb_mat, message="char embedding")
-    save(args.train_eval_file, train_eval, message="train eval")
-    save(args.dev_eval_file, dev_eval, message="dev eval")
-    save(args.word2idx_file, word2idx_dict, message="word dictionary")
-    save(args.char2idx_file, char2idx_dict, message="char dictionary")
-    save(args.dev_meta_file, dev_meta, message="dev meta")
+    # save(args.word_emb_file, word_emb_mat, message="word embedding")
+    # save(args.char_emb_file, char_emb_mat, message="char embedding")
+    # save(args.train_eval_file, train_eval, message="train eval")
+    # save(args.dev_eval_file, dev_eval, message="dev eval")
+    # save(args.word2idx_file, word2idx_dict, message="word dictionary")
+    # save(args.char2idx_file, char2idx_dict, message="char dictionary")
+    # save(args.dev_meta_file, dev_meta, message="dev meta")
 
 
 if __name__ == '__main__':
@@ -390,7 +513,4 @@ if __name__ == '__main__':
     args_.dev_file = url_to_data_path(args_.dev_url)
     if args_.include_test_examples:
         args_.test_file = url_to_data_path(args_.test_url)
-    glove_dir = url_to_data_path(args_.glove_url.replace('.zip', ''))
-    glove_ext = f'.txt' if glove_dir.endswith('d') else f'.{args_.glove_dim}d.txt'
-    args_.glove_file = os.path.join(glove_dir, os.path.basename(glove_dir) + glove_ext)
     pre_process(args_)

@@ -10,11 +10,11 @@ dependencies:
   - pip
   - spacy=2.0.16
   - tensorboard
-  - tensorflow
+  - tensorflow=2.0
   - tensorboardX
   - tqdm
   - urllib3
   - pytorch=1.0.0
-  - pytorch-pretrained-bert
+  - transformers
   - pip:
-    - torch==1.0.0
+    - torch

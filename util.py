@@ -45,38 +45,29 @@ class SQuAD(data.Dataset):
         super(SQuAD, self).__init__()
 
         dataset = np.load(data_path)
-        self.context_idxs = torch.from_numpy(dataset['context_idxs']).long()
-        self.context_char_idxs = torch.from_numpy(dataset['context_char_idxs']).long()
-        self.question_idxs = torch.from_numpy(dataset['ques_idxs']).long()
-        self.question_char_idxs = torch.from_numpy(dataset['ques_char_idxs']).long()
-        self.y1s = torch.from_numpy(dataset['y1s']).long()
-        self.y2s = torch.from_numpy(dataset['y2s']).long()
+
+        self.input_ids = torch.from_numpy(dataset['input_ids']).long()
+        self.attention_mask = torch.from_numpy(dataset['attention_mask']).long()
+        self.token_type_ids = torch.from_numpy(dataset['token_type_ids']).long()
+        self.y1s=torch.from_numpy(dataset['y1s']).long()
+        self.y2s=torch.from_numpy(dataset['y2s']).long()
+        self.ids = dataset['ids']
+
 
         if use_v2:
             # SQuAD 2.0: Use index 0 for no-answer token (token 1 = OOV)
-            batch_size, c_len, w_len = self.context_char_idxs.size()
-            ones = torch.ones((batch_size, 1), dtype=torch.int64)
-            self.context_idxs = torch.cat((ones, self.context_idxs), dim=1)
-            self.question_idxs = torch.cat((ones, self.question_idxs), dim=1)
-
-            ones = torch.ones((batch_size, 1, w_len), dtype=torch.int64)
-            self.context_char_idxs = torch.cat((ones, self.context_char_idxs), dim=1)
-            self.question_char_idxs = torch.cat((ones, self.question_char_idxs), dim=1)
-
             self.y1s += 1
             self.y2s += 1
 
         # SQuAD 1.1: Ignore no-answer examples
-        self.ids = torch.from_numpy(dataset['ids']).long()
         self.valid_idxs = [idx for idx in range(len(self.ids))
                            if use_v2 or self.y1s[idx].item() >= 0]
 
     def __getitem__(self, idx):
         idx = self.valid_idxs[idx]
-        example = (self.context_idxs[idx],
-                   self.context_char_idxs[idx],
-                   self.question_idxs[idx],
-                   self.question_char_idxs[idx],
+        example = (self.input_ids[idx],
+                   self.attention_mask[idx],
+                   self.token_type_ids[idx],
                    self.y1s[idx],
                    self.y2s[idx],
                    self.ids[idx])
@@ -107,13 +98,16 @@ def collate_fn(examples):
     def merge_0d(scalars, dtype=torch.int64):
         return torch.tensor(scalars, dtype=dtype)
 
-    def merge_1d(arrays, dtype=torch.int64, pad_value=0):
-        lengths = [(a != pad_value).sum() for a in arrays]
-        padded = torch.zeros(len(arrays), max(lengths), dtype=dtype)
-        for i, seq in enumerate(arrays):
-            end = lengths[i]
-            padded[i, :end] = seq[:end]
-        return padded
+    # def merge_1d(arrays, dtype=torch.int64, pad_value=0):
+    #     lengths = [(a != pad_value).sum() for a in arrays]
+    #     padded = torch.zeros(len(arrays), max(lengths), dtype=dtype)
+    #     for i, seq in enumerate(arrays):
+    #         end = lengths[i]
+    #         padded[i, :end] = seq[:end]
+    #     return padded
+
+    def merge_1d(arrays):
+        return torch.stack(arrays)
 
     def merge_2d(matrices, dtype=torch.int64, pad_value=0):
         heights = [(m.sum(1) != pad_value).sum() for m in matrices]
@@ -125,21 +119,32 @@ def collate_fn(examples):
         return padded
 
     # Group by tensor type
-    context_idxs, context_char_idxs, \
-        question_idxs, question_char_idxs, \
+    input_ids, attention_mask, token_type_ids, \
         y1s, y2s, ids = zip(*examples)
 
+    # print("A")
+    # print(len(input_ids))
+    # print(len(attention_mask))
+    # print(len(token_type_ids))
+
     # Merge into batch tensors
-    context_idxs = merge_1d(context_idxs)
-    context_char_idxs = merge_2d(context_char_idxs)
-    question_idxs = merge_1d(question_idxs)
-    question_char_idxs = merge_2d(question_char_idxs)
+    # print(input_ids[0])
+    # print(attention_mask[0])
+    # exit()
+    input_ids = merge_1d(input_ids)
+    attention_mask = merge_1d(attention_mask)
+    token_type_ids = merge_1d(token_type_ids)
+
+    # print("B")
+    # print(input_ids.shape)
+    # print(attention_mask.shape)
+    # print(token_type_ids.shape)
+
     y1s = merge_0d(y1s)
     y2s = merge_0d(y2s)
-    ids = merge_0d(ids)
+    # ids = merge_0d(ids)
 
-    return (context_idxs, context_char_idxs,
-            question_idxs, question_char_idxs,
+    return (input_ids, attention_mask, token_type_ids,
             y1s, y2s, ids)
 
 
