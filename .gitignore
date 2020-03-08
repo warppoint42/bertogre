@@ -8,3 +8,5 @@ save/
 !data/test-v2.0.json
 !data/train0v2.0.json
 .texpadtmp/
+runs/
+cached*

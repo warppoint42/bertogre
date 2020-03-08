@@ -11,37 +11,6 @@ def get_setup_args():
     parser = argparse.ArgumentParser('Download and pre-process SQuAD')
 
     add_common_args(parser)
-
-    parser.add_argument("--threads", type=int, default=4, help="multiple threads for converting example to features")
-    parser.add_argument(
-        "--max_seq_length",
-        default=384,
-        type=int,
-        help="The maximum total input sequence length after WordPiece tokenization. Sequences "
-        "longer than this will be truncated, and sequences shorter than this will be padded.",
-    )
-    parser.add_argument(
-        "--doc_stride",
-        default=128,
-        type=int,
-        help="When splitting up a long document into chunks, how much stride to take between chunks.",
-    )
-    parser.add_argument(
-        "--max_query_length",
-        default=64,
-        type=int,
-        help="The maximum number of tokens for the question. Questions longer than this will "
-        "be truncated to this length.",
-    )
-    parser.add_argument('--train_url',
-                        type=str,
-                        default='https://github.com/chrischute/squad/data/train-v2.0.json')
-    parser.add_argument('--dev_url',
-                        type=str,
-                        default='https://github.com/chrischute/squad/data/dev-v2.0.json')
-    parser.add_argument('--test_url',
-                        type=str,
-                        default='https://github.com/chrischute/squad/data/test-v2.0.json')
     # parser.add_argument('--glove_url',
     #                     type=str,
     #                     default='http://nlp.stanford.edu/data/glove.840B.300d.zip')
@@ -197,6 +166,15 @@ def get_test_args():
 
 def add_common_args(parser):
     """Add arguments common to all 3 scripts: setup.py, train.py, test.py"""
+    parser.add_argument('--train_url',
+                        type=str,
+                        default='https://github.com/chrischute/squad/data/train-v2.0.json')
+    parser.add_argument('--dev_url',
+                        type=str,
+                        default='https://github.com/chrischute/squad/data/dev-v2.0.json')
+    parser.add_argument('--test_url',
+                        type=str,
+                        default='https://github.com/chrischute/squad/data/test-v2.0.json')
     parser.add_argument('--train_record_file',
                         type=str,
                         default='./data/train.npz')
@@ -224,6 +202,28 @@ def add_common_args(parser):
     # parser.add_argument('--data_folder',
     #                     type=str,
     #                     default='./data/')
+    parser.add_argument("--threads", type=int, default=4, help="multiple threads for converting example to features")
+    parser.add_argument(
+        "--max_seq_length",
+        default=384,
+        type=int,
+        help="The maximum total input sequence length after WordPiece tokenization. Sequences "
+        "longer than this will be truncated, and sequences shorter than this will be padded.",
+    )
+    parser.add_argument(
+        "--doc_stride",
+        default=128,
+        type=int,
+        help="When splitting up a long document into chunks, how much stride to take between chunks.",
+    )
+    parser.add_argument(
+        "--max_query_length",
+        default=64,
+        type=int,
+        help="The maximum number of tokens for the question. Questions longer than this will "
+        "be truncated to this length.",
+    )
+    parser.add_argument("--max_answer_length", default=999, type=int)
 
 
 def add_train_test_args(parser):
