@@ -127,9 +127,14 @@ def train(args, train_dataset, model, tokenizer):
 
     if bool(args.albert_add) or bool(args.albert_set):
         if args.model_type in ["afqa"]:
+            nlayers = model.getLayers()
             if bool(args.albert_add):
+                if args.albert_add > nlayers:
+                    raise ValueError("ERROR: Adding more layers than originally existed in Albert.")
                 model.incLayers(args.albert_add)
             if bool(args.albert_set):
+                if args.albert_set > nlayers * 2:
+                    raise ValueError("ERROR: Adding more layers than originally existed in Albert.")
                 model.setLayers(args.albert_add)
         else:
             raise TypeError("Layer duplication called on unsupported model.")
