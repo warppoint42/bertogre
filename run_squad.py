@@ -119,31 +119,27 @@ def get_trainable_params(model):
 
 def train(args, train_dataset, model, tokenizer):
 
-    sptot = bool(args.albert_add) + bool(args.albert_set) + bool(args.bert_dup)
+    aabool = args.albert_add > 0
+    asbool = args.albert_set > -1
+    bbool = args.bert_dup > -1
+    sptot = aabool + asbool + bbool
     if sptot > 1:
         raise ValueError("Too many duplication arguments given.")
-    elif sptot == 1:
-        if bool(args.albert_add):
-            spval = args.albert_add
-        if bool(args.albert_set):
-            spval = args.albert_set
-        if bool(args.bert_dup):
-            spval = args.bert_dup
 
-    if bool(args.albert_add) or bool(args.albert_set):
+    if aabool or asbool:
         if args.model_type in ["afqa"]:
             nlayers = model.getLayers()
-            if bool(args.albert_add):
+            if aabool:
                 if args.albert_add > nlayers:
                     raise ValueError("ERROR: Adding more layers than originally existed in Albert.")
                 model.incLayers(args.albert_add)
-            if bool(args.albert_set):
+            if asbool:
                 if args.albert_set > nlayers * 2:
                     raise ValueError("ERROR: Adding more layers than originally existed in Albert.")
-                model.setLayers(args.albert_add)
+                model.setLayers(args.albert_set)
         else:
             raise TypeError("Layer duplication called on unsupported model.")
-    if bool(args.bert_dup):
+    if bbool:
         if args.model_type in ["bfqa", "dfqa", "rfqa", "xlmfqa", "xlnfqa"]:
             model.dupeLayer(args.bert_dup, args.bert_dup, False)
         else:
@@ -845,6 +841,10 @@ def main():
     while os.path.exists(logpath):
         logpath = os.path.join(outdir, args.model_name + "log" + str(logct) + ".log")
         logct += 1
+    # Create output directory if needed
+    if not os.path.exists(args.output_dir) and args.local_rank in [-1, 0]:
+        os.makedirs(args.output_dir)
+    os.mknod(logpath)
     hdlr = logging.FileHandler(logpath)
     formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
     hdlr.setFormatter(formatter)
