@@ -11,7 +11,7 @@ Additional model types (smaller/base models shown to have better results for Ber
     "xlmfqa" - custom XLM with layer duplication support, intended for use with xlm-mlm-en-2048 \ 
  \
 Additional arguments: \
-    --checkpoint_prefix [name] - (optional) adds a prefix to the checkpoint folders \
+    --model_name [name] - (optional) adds a prefix to the checkpoint folders and logs, not to be confused with model_name_or_path \
     --albert_add [n] - (optional, afqa only) adds n layers to Albert before training \
     --albert_set [n] - (optional, afqa only) sets Albert to have n layers before training \
     --bert_dup [n] - (optional, non-afqa only) duplicates layer n of a Bert model with the new layer next to the original before training \
