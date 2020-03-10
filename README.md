@@ -1,22 +1,18 @@
-## Setup
-
-1. Make sure you have [Miniconda](https://conda.io/docs/user-guide/install/index.html#regular-installation) installed
-    1. Conda is a package manager that sandboxes your project’s dependencies in a virtual environment
-    2. Miniconda contains Conda and its dependencies with no extra packages by default (as opposed to Anaconda, which installs some extra packages)
-
-2. cd into src, run `conda env create -f environment.yml`
-    1. This creates a Conda environment called `squad`
-
-3. Run `source activate squad`
-    1. This activates the `squad` environment
-    2. Do this each time you want to write/test your code
-  
-4. Run `python setup.py`
-    1. This downloads SQuAD 2.0 training and dev sets, as well as the GloVe 300-dimensional word vectors (840B)
-    2. This also pre-processes the dataset for efficient data loading
-    3. For a MacBook Pro on the Stanford network, `setup.py` takes around 30 minutes total  
-
-5. Browse the code in `train.py`
-    1. The `train.py` script is the entry point for training a model. It reads command-line arguments, loads the SQuAD dataset, and trains a model.
-    2. You may find it helpful to browse the arguments provided by the starter code. Either look directly at the `parser.add_argument` lines in the source code, or run `python train.py -h`.
 # bertogre
+
+Use exactly like you would with original run_squad.py except: \
+ \
+Additional model types (smaller/base models shown to have better results for Bert, unknown for Albert): \
+    "bfqa" - custom Bert with layer duplication support, intended for use with bert-base-uncased and other base models \
+    "afqa" - custom Albert with layer duplication support, intended for use with albert-base-v2 \
+    "rfqa" - custom Roberta with layer duplication support, intended for use with roberta-base and distilroberta-base \
+    "dfqa" - custom DistilBert with layer duplication support, intended for use with distilbert-base-uncased \
+    "xlnfqa" - custom XLNet with layer duplication support, intended for use with xlnet-base-cased \
+    "xlmfqa" - custom XLM with layer duplication support, intended for use with xlm-mlm-en-2048 \ 
+ \
+Additional arguments: \
+    --checkpoint_prefix [name] - (optional) adds a prefix to the checkpoint folders \
+    --albert_add [n] - (optional, afqa only) adds n layers to Albert before training \
+    --albert_set [n] - (optional, afqa only) sets Albert to have n layers before training \
+    --bert_dup [n] - (optional, non-afqa only) duplicates layer n of a Bert model with the new layer next to the original before training \
+    --project_dir [path] - (optional) outputs submissions csv and log file to a different folder

@@ -9,4 +9,5 @@ save/
 !data/train0v2.0.json
 .texpadtmp/
 runs/
+.ipynb_checkpoints/
 cached*

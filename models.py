@@ -27,7 +27,6 @@ class BFQA(BertForQuestionAnswering):
         #encoder does not seem to have config
 #bert-base-uncased - 12 layers
 
-
 class AFQA(AlbertForQuestionAnswering):
     def __init__(self, config):
         super(AFQA, self).__init__(config)
@@ -43,6 +42,7 @@ class AFQA(AlbertForQuestionAnswering):
     def setLayers(self, nlayers):
         self.config.num_hidden_layers = nlayers
 #albert-base-v2 - 12 layers
+
 
 class RFQA(RobertaForQuestionAnswering):
     def __init__(self, config):
@@ -135,6 +135,7 @@ class XLMFQA(XLMForQuestionAnswering):
 ##Must duplicate self.transformer.attentions/layer_norm1/ffns/layer_norm2
 ##use n_layers
 ##xlm-mlm-en-2048 - 12 layers
+
 
 
 
