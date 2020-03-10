@@ -29,6 +29,8 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
+from models import BFQA
+
 from transformers import (
     WEIGHTS_NAME,
     AdamW,
@@ -80,8 +82,10 @@ ALL_MODELS = sum(
     (),
 )
 
+##CUSTOM
 MODEL_CLASSES = {
     "bert": (BertConfig, BertForQuestionAnswering, BertTokenizer),
+    "bfqa": (BertConfig, BFQA, BertTokenizer),
     "camembert": (CamembertConfig, CamembertForQuestionAnswering, CamembertTokenizer),
     "roberta": (RobertaConfig, RobertaForQuestionAnswering, RobertaTokenizer),
     "xlnet": (XLNetConfig, XLNetForQuestionAnswering, XLNetTokenizer),
@@ -102,8 +106,39 @@ def set_seed(args):
 def to_list(tensor):
     return tensor.detach().cpu().tolist()
 
+##CUSTOM
+def get_trainable_params(model):
+    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+    params = sum([np.prod(p.size()) for p in model_parameters])
+    return params
 
 def train(args, train_dataset, model, tokenizer):
+
+    sptot = bool(args.albert_add) + bool(args.albert_set) + bool(args.bert_dup)
+    if sptot > 1:
+        raise ValueError("Too many duplication arguments given.")
+    elif sptot == 1:
+        if bool(args.albert_add):
+            spval = args.albert_add
+        if bool(args.albert_set):
+            spval = args.albert_set
+        if bool(args.bert_dup):
+            spval = args.bert_dup
+
+    if bool(args.albert_add) or bool(args.albert_set):
+        if args.model_type in ["afqa"]:
+            if bool(args.albert_add):
+                model.incLayers(args.albert_add)
+            if bool(args.albert_set):
+                model.setLayers(args.albert_add)
+        else:
+            raise TypeError("Layer duplication called on unsupported model.")
+    if bool(args.bert_dup):
+        if args.model_type in ["bfqa", "dfqa", "rfqa", "xlmfqa", "xlnfqa"]:
+            model.dupeLayer(args.bert_dup, args.bert_dup, False)
+        else:
+            raise TypeError("Layer duplication called on unsupported model.")
+
     """ Train the model """
     if args.local_rank in [-1, 0]:
         tb_writer = SummaryWriter()
@@ -271,7 +306,8 @@ def train(args, train_dataset, model, tokenizer):
 
                 # Save model checkpoint
                 if args.local_rank in [-1, 0] and args.save_steps > 0 and global_step % args.save_steps == 0:
-                    output_dir = os.path.join(args.output_dir, "checkpoint-{}".format(global_step))
+                    ##CUSTOM
+                    output_dir = os.path.join(args.output_dir, args.model_name + "checkpoint-{}".format(global_step))
                     if not os.path.exists(output_dir):
                         os.makedirs(output_dir)
                     # Take care of distributed/parallel training
@@ -295,6 +331,23 @@ def train(args, train_dataset, model, tokenizer):
 
     if args.local_rank in [-1, 0]:
         tb_writer.close()
+
+    ##CUSTOM
+    #save at end of training, don't be an idiot
+    output_dir = os.path.join(args.output_dir, args.model_name +"checkpoint-{}".format(global_step))
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    # Take care of distributed/parallel training
+    model_to_save = model.module if hasattr(model, "module") else model
+    model_to_save.save_pretrained(output_dir)
+    tokenizer.save_pretrained(output_dir)
+
+    torch.save(args, os.path.join(output_dir, "training_args.bin"))
+    logger.info("Saving model checkpoint to %s", output_dir)
+
+    torch.save(optimizer.state_dict(), os.path.join(output_dir, "optimizer.pt"))
+    torch.save(scheduler.state_dict(), os.path.join(output_dir, "scheduler.pt"))
+    logger.info("Saving optimizer and scheduler states to %s", output_dir)
 
     return global_step, tr_loss / global_step
 
@@ -429,6 +482,16 @@ def evaluate(args, model, tokenizer, prefix=""):
             tokenizer,
         )
 
+    eval_type = "test" if "test" in args.predict_file else "dev"
+    submission_file = os.path.join(args.output_dir, eval_type + "_submission.csv")
+    os.system("jq -r '[\"Id\", \"Predicted\"], (to_entries | .[] | [.key, .value]) | @csv' " \
+        + output_prediction_file + "> " + submission_file)
+
+    if args.project_dir:
+        submission_file = os.path.join(args.project_dir, model_name + eval_type + "_submission.csv")
+        os.system("jq -r '[\"Id\", \"Predicted\"], (to_entries | .[] | [.key, .value]) | @csv' " \
+            + output_prediction_file + "> " + submission_file)
+    
     # Compute the F1 and exact scores.
     results = squad_evaluate(examples, predictions)
     return results
@@ -555,6 +618,27 @@ def main():
     parser.add_argument(
         "--config_name", default="", type=str, help="Pretrained config name or path if not the same as model_name"
     )
+    ##CUSTOM
+    parser.add_argument(
+        "--model_name", default="", type=str, help="adds a prefix to the checkpoint folders and logs, not to be confused with model_name_or_path"
+    )
+    parser.add_argument(
+        "--project_dir", default="", type=str, help="outputs submissions csv and log file to a different folder"
+    )
+    parser.add_argument(
+        "--albert_add", default=-1, type=int, 
+        help="(optional, afqa only) adds n layers to Albert before training"
+    )
+    parser.add_argument(
+        "--albert_set", default=-1, type=int, 
+        help="(optional, afqa only) sets Albert to have n layers before training"
+    )
+    parser.add_argument(
+        "--bert_dup", default=-1, type=int, 
+        help="(optional, non-afqa only) duplicates layer n of a Bert model with the new layer next to the original before training "
+    )
+
+
     parser.add_argument(
         "--tokenizer_name",
         default="",
@@ -694,6 +778,10 @@ def main():
     parser.add_argument("--threads", type=int, default=1, help="multiple threads for converting example to features")
     args = parser.parse_args()
 
+    ##CUSTOM
+    if args.model_name != "":
+        args.model_name  += "_"
+
     if args.doc_stride >= args.max_seq_length - args.max_query_length:
         logger.warning(
             "WARNING - You've set a doc stride which may be superior to the document length in some "
@@ -739,6 +827,19 @@ def main():
         datefmt="%m/%d/%Y %H:%M:%S",
         level=logging.INFO if args.local_rank in [-1, 0] else logging.WARN,
     )
+
+    ##CUSTOM https://docs.python.org/2.3/lib/node304.html
+    outdir = args.project_dir if args.project_dir else args.output_dir
+    logpath = os.path.join(outdir, args.model_name + "log0.log")
+    logct = 1
+    while os.path.exists(logpath):
+        logpath = os.path.join(outdir, args.model_name + "log" + str(logct) + ".log")
+        logct += 1
+    hdlr = logging.FileHandler(logpath)
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    hdlr.setFormatter(formatter)
+    logger.addHandler(hdlr) 
+
     logger.warning(
         "Process rank: %s, device: %s, n_gpu: %s, distributed training: %s, 16-bits training: %s",
         args.local_rank,
