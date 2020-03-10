@@ -1,72 +1,70 @@
-"""Top-level model classes.
+from transformers.modeling_bert import BertForQuestionAnswering, BertLayer
+from transformers.modeling_albert import AlbertForQuestionAnswering
+from transformers.modeling_distilbert import DistilBertForQuestionAnswering, TransformerBlock
+from transformers.modeling_roberta import RobertaForQuestionAnswering
+import copy
 
-Author:
-    Chris Chute (chute@stanford.edu)
-"""
+class BFQA(BertForQuestionAnswering):
+    def __init__(self, config):
+        super(BFQA, self).__init__(config)
 
-import layers
-import torch
-import torch.nn as nn
+    def dupeLayer(self, sourceidx, targetidx, link = False):
+        #self.layer = nn.ModuleList([BertLayer(config) for _ in range(config.num_hidden_layers)])
+        if link:
+            mlp = self.bert.encoder.layer[sourceidx]
+        if not link:
+            mlp = BertLayer(self.config)
+        self.bert.encoder.layer.insert(targetidx, mlp)
+        oldct = self.config.num_hidden_layers
+        newct = oldct + 1
+        self.config.num_hidden_layers = newct #self
+        self.bert.config.num_hidden_layers = newct #bertmodel
+        #encoder does not seem to have config
+
+class AFQA(AlbertForQuestionAnswering):
+    def __init__(self, config):
+        super(AFQA, self).__init__(config)
+
+    def incLayers(self, nlayers):
+        oldct = self.config.num_hidden_layers
+        newct = oldct + nlayers
+        self.config.num_hidden_layers = newct #self
+        self.albert.config.num_hidden_layers = newct #albertmodel
+        self.albert.encoder.config.num_hidden_layers = newct #encoder
+
+class RFQA(RobertaForQuestionAnswering):
+    def __init__(self, config):
+        super(RFQA, self).__init__(config)
+
+    def dupeLayer(self, sourceidx, targetidx, link = False):
+        #self.layer = nn.ModuleList([BertLayer(config) for _ in range(config.num_hidden_layers)])
+        if link:
+            mlp = self.roberta.encoder.layer[sourceidx]
+        if not link:
+            mlp = BertLayer(self.config)
+        self.bert.encoder.layer.insert(targetidx, mlp)
+        oldct = self.config.num_hidden_layers
+        newct = oldct + 1
+        self.config.num_hidden_layers = newct #self
+        self.bert.config.num_hidden_layers = newct #bertmodel
+        #encoder does not seem to have config
+
+class DFQA(RobertaForQuestionAnswering):
+    def __init__(self, config):
+        super(DFQA, self).__init__(config)
+
+    def dupeLayer(self, sourceidx, targetidx, link = False):
+        #self.layer = nn.ModuleList([BertLayer(config) for _ in range(config.num_hidden_layers)])
+        if link:
+            mlp = self.distilbert.transformer.layer[sourceidx]
+        if not link:
+            mlp = TransformerBlock(self.config)
+        self.distilbert.transformer.layer.insert(targetidx, mlp)
+        oldct = self.config.n_layers
+        newct = oldct + 1
+        self.config.n_layers = newct #self
+        self.bert.config.n_layers = newct #bertmodel
+        #encoder does not seem to have config
 
 
-class BiDAF(nn.Module):
-    """Baseline BiDAF model for SQuAD.
 
-    Based on the paper:
-    "Bidirectional Attention Flow for Machine Comprehension"
-    by Minjoon Seo, Aniruddha Kembhavi, Ali Farhadi, Hannaneh Hajishirzi
-    (https://arxiv.org/abs/1611.01603).
-
-    Follows a high-level structure commonly found in SQuAD models:
-        - Embedding layer: Embed word indices to get word vectors.
-        - Encoder layer: Encode the embedded sequence.
-        - Attention layer: Apply an attention mechanism to the encoded sequence.
-        - Model encoder layer: Encode the sequence again.
-        - Output layer: Simple layer (e.g., fc + softmax) to get final outputs.
-
-    Args:
-        word_vectors (torch.Tensor): Pre-trained word vectors.
-        hidden_size (int): Number of features in the hidden state at each layer.
-        drop_prob (float): Dropout probability.
-    """
-    def __init__(self, word_vectors, hidden_size, drop_prob=0.):
-        super(BiDAF, self).__init__()
-        self.emb = layers.Embedding(word_vectors=word_vectors,
-                                    hidden_size=hidden_size,
-                                    drop_prob=drop_prob)
-
-        self.enc = layers.RNNEncoder(input_size=hidden_size,
-                                     hidden_size=hidden_size,
-                                     num_layers=1,
-                                     drop_prob=drop_prob)
-
-        self.att = layers.BiDAFAttention(hidden_size=2 * hidden_size,
-                                         drop_prob=drop_prob)
-
-        self.mod = layers.RNNEncoder(input_size=8 * hidden_size,
-                                     hidden_size=hidden_size,
-                                     num_layers=2,
-                                     drop_prob=drop_prob)
-
-        self.out = layers.BiDAFOutput(hidden_size=hidden_size,
-                                      drop_prob=drop_prob)
-
-    def forward(self, cw_idxs, qw_idxs):
-        c_mask = torch.zeros_like(cw_idxs) != cw_idxs
-        q_mask = torch.zeros_like(qw_idxs) != qw_idxs
-        c_len, q_len = c_mask.sum(-1), q_mask.sum(-1)
-
-        c_emb = self.emb(cw_idxs)         # (batch_size, c_len, hidden_size)
-        q_emb = self.emb(qw_idxs)         # (batch_size, q_len, hidden_size)
-
-        c_enc = self.enc(c_emb, c_len)    # (batch_size, c_len, 2 * hidden_size)
-        q_enc = self.enc(q_emb, q_len)    # (batch_size, q_len, 2 * hidden_size)
-
-        att = self.att(c_enc, q_enc,
-                       c_mask, q_mask)    # (batch_size, c_len, 8 * hidden_size)
-
-        mod = self.mod(att, c_len)        # (batch_size, c_len, 2 * hidden_size)
-
-        out = self.out(att, mod, c_mask)  # 2 tensors, each (batch_size, c_len)
-
-        return out
