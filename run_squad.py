@@ -29,7 +29,7 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
-from models import BFQA
+from models import BFQA, RFQA, AFQA, XLMFQA, XLNFQA, DFQA
 
 from transformers import (
     WEIGHTS_NAME,
@@ -88,10 +88,15 @@ MODEL_CLASSES = {
     "bfqa": (BertConfig, BFQA, BertTokenizer),
     "camembert": (CamembertConfig, CamembertForQuestionAnswering, CamembertTokenizer),
     "roberta": (RobertaConfig, RobertaForQuestionAnswering, RobertaTokenizer),
+    "rfqa": (RobertaConfig, RFQA, RobertaTokenizer),
     "xlnet": (XLNetConfig, XLNetForQuestionAnswering, XLNetTokenizer),
+    "xlnfqa": (XLNetConfig, XLNFQA, XLNetTokenizer),
     "xlm": (XLMConfig, XLMForQuestionAnswering, XLMTokenizer),
+    "xlmfqa": (XLMConfig, XLMFQA, XLMTokenizer),
     "distilbert": (DistilBertConfig, DistilBertForQuestionAnswering, DistilBertTokenizer),
+    "dfqa": (DistilBertConfig, DFQA, DistilBertTokenizer),
     "albert": (AlbertConfig, AlbertForQuestionAnswering, AlbertTokenizer),
+    "afqa": (AlbertConfig, AFQA, AlbertTokenizer),
 }
 
 
