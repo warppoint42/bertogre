@@ -1,0 +1,26 @@
+2020-03-11 09:51:58,213 WARNING Process rank: -1, device: cuda, n_gpu: 4, distributed training: False, 16-bits training: False
+2020-03-11 09:52:02,528 INFO Training/evaluation parameters Namespace(adam_epsilon=1e-08, albert_add=-1, albert_set=-1, bert_dup=-1, bert_dup_n=-1, cache_dir='', config_name='', data_dir=None, device=device(type='cuda'), do_eval=True, do_lower_case=True, do_train=True, doc_stride=128, eval_all_checkpoints=False, evaluate_during_training=False, fp16=False, fp16_opt_level='O1', gradient_accumulation_steps=1, lang_id=0, learning_rate=3e-05, local_rank=-1, logging_steps=500, max_answer_length=30, max_grad_norm=1.0, max_query_length=64, max_seq_length=384, max_steps=-1, model_name='distilbertbase_', model_name_or_path='distilbert-base-uncased', model_type='dfqa', n_best_size=5, n_gpu=4, no_cuda=False, null_score_diff_threshold=0.0, num_train_epochs=3.0, output_dir='save/distilbertbase', overwrite_cache=False, overwrite_output_dir=False, per_gpu_eval_batch_size=8, per_gpu_train_batch_size=8, predict_file='data/dev-v2.0.json', project_dir='logs/', save_steps=8000, seed=42, server_ip='', server_port='', threads=32, tokenizer_name='', train_file='data/train-v2.0.json', verbose_logging=False, version_2_with_negative=True, warmup_steps=0, weight_decay=0.0)
+2020-03-11 09:52:02,529 INFO Loading features from cached file ./cached_train_distilbert-base-uncased_384
+2020-03-11 09:52:31,164 INFO NUMBER PARAMS: 66364418
+2020-03-11 09:52:31,167 INFO ***** Running training *****
+2020-03-11 09:52:31,167 INFO   Num examples = 131944
+2020-03-11 09:52:31,168 INFO   Num Epochs = 3
+2020-03-11 09:52:31,168 INFO   Instantaneous batch size per GPU = 8
+2020-03-11 09:52:31,168 INFO   Total train batch size (w. parallel, distributed & accumulation) = 32
+2020-03-11 09:52:31,168 INFO   Gradient Accumulation steps = 1
+2020-03-11 09:52:31,168 INFO   Total optimization steps = 12372
+2020-03-11 11:28:44,556 INFO Saving model checkpoint to save/distilbertbase/distilbertbase_checkpoint-8000
+2020-03-11 11:28:45,009 INFO Saving optimizer and scheduler states to save/distilbertbase/distilbertbase_checkpoint-8000
+2020-03-11 12:21:19,677 INFO Saving model checkpoint to save/distilbertbase/distilbertbase_checkpoint-12373
+2020-03-11 12:21:20,124 INFO Saving optimizer and scheduler states to save/distilbertbase/distilbertbase_checkpoint-12373
+2020-03-11 12:21:20,126 INFO  global_step = 12373, average loss = 1.0762109530706234
+2020-03-11 12:21:20,126 INFO Saving model checkpoint to save/distilbertbase
+2020-03-11 12:21:21,840 INFO Loading checkpoints saved during training for evaluation
+2020-03-11 12:21:21,841 INFO Evaluate the following checkpoints: ['save/distilbertbase']
+2020-03-11 12:21:23,320 INFO Creating features from dataset file at .
+2020-03-11 12:21:29,805 INFO Saving features into cached file ./cached_dev_distilbert-base-uncased_384
+2020-03-11 12:21:40,072 INFO ***** Running evaluation  *****
+2020-03-11 12:21:40,073 INFO   Num examples = 6372
+2020-03-11 12:21:40,073 INFO   Batch size = 32
+2020-03-11 12:22:38,909 INFO   Evaluation done in total 58.835632 secs (0.009233 sec per example)
+2020-03-11 12:22:49,316 INFO Results: {'HasAns_f1': 75.80412884825975, 'exact': 65.59723593287265, 'NoAns_total': 3168, 'HasAns_total': 2910, 'total': 6078, 'NoAns_f1': 62.531565656565654, 'f1': 68.88614921823547, 'best_f1_thresh': 0.0, 'best_exact': 65.61368871339256, 'NoAns_exact': 62.531565656565654, 'best_f1': 68.90260199875532, 'best_exact_thresh': 0.0, 'HasAns_exact': 68.93470790378007}
