@@ -266,10 +266,10 @@ def train(args, train_dataset, model, tokenizer):
                 "end_positions": batch[4],
             }
 
-            if args.model_type in ["xlm", "roberta", "distilbert", "camembert"]:
+            if args.model_type in ["xlm", "roberta", "distilbert", "camembert", "xlmfqa", "rfqa", "dfqa"]:
                 del inputs["token_type_ids"]
 
-            if args.model_type in ["xlnet", "xlm"]:
+            if args.model_type in ["xlnet", "xlm", "xlnfqa", "xlmfqa"]:
                 inputs.update({"cls_index": batch[5], "p_mask": batch[6]})
                 if args.version_2_with_negative:
                     inputs.update({"is_impossible": batch[7]})
@@ -399,13 +399,13 @@ def evaluate(args, model, tokenizer, prefix=""):
                 "token_type_ids": batch[2],
             }
 
-            if args.model_type in ["xlm", "roberta", "distilbert", "camembert"]:
+            if args.model_type in ["xlm", "roberta", "distilbert", "camembert", "xlmfqa", "rfqa", "dfqa"]:
                 del inputs["token_type_ids"]
 
             example_indices = batch[3]
 
             # XLNet and XLM use more arguments for their predictions
-            if args.model_type in ["xlnet", "xlm"]:
+            if args.model_type in ["xlnet", "xlm", "xlmfqa", "xlnfqa"]:
                 inputs.update({"cls_index": batch[4], "p_mask": batch[5]})
                 # for lang_id-sensitive xlm models
                 if hasattr(model, "config") and hasattr(model.config, "lang2id"):
@@ -458,7 +458,7 @@ def evaluate(args, model, tokenizer, prefix=""):
         output_null_log_odds_file = None
 
     # XLNet and XLM use a more complex post-processing procedure
-    if args.model_type in ["xlnet", "xlm"]:
+    if args.model_type in ["xlnet", "xlm", "xlnfqa", "xlmfqa"]:
         start_n_top = model.config.start_n_top if hasattr(model, "config") else model.module.config.start_n_top
         end_n_top = model.config.end_n_top if hasattr(model, "config") else model.module.config.end_n_top
 
