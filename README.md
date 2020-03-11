@@ -15,4 +15,5 @@ Additional arguments: \
     --albert_add [n] - (optional, afqa only) adds n layers to Albert before training \
     --albert_set [n] - (optional, afqa only) sets Albert to have n layers before training \
     --bert_dup [n] - (optional, non-afqa only) duplicates layer n of a Bert model with the new layer next to the original before training \
+    --bert_dup_n [n] - (optional, non-afqa only) duplicates first n of a Bert model with the new layers next to the originals before training 
     --project_dir [path] - (optional) outputs submissions csv and log file to a different folder
