@@ -157,7 +157,6 @@ class XLMFQA(XLMForQuestionAnswering):
             self.dupeLayer(i, i, link = False)
     def getLayers(self):
         return self.config.n_layers
-##Must duplicate self.transformer.attentions/layer_norm1/ffns/layer_norm2
 ##use n_layers
 ##xlm-mlm-en-2048 - 12 layers
 
