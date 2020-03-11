@@ -25,6 +25,9 @@ class BFQA(BertForQuestionAnswering):
         self.config.num_hidden_layers = newct #self
         # self.bert.config.num_hidden_layers = newct #bertmodel, commented out since linked
         #encoder does not seem to have config
+    def dupeFirstN(self, n):
+        for i in reversed(range(n)):
+            self.dupeLayer(i, i, link = False)
     def getLayers(self):
         return self.config.num_hidden_layers
 #bert-base-uncased - 12 layers
@@ -63,6 +66,9 @@ class RFQA(RobertaForQuestionAnswering):
         self.config.num_hidden_layers = newct #self
         # self.roberta.config.num_hidden_layers = newct #bertmodel
         #encoder does not seem to have config
+    def dupeFirstN(self, n):
+        for i in reversed(range(n)):
+            self.dupeLayer(i, i, link = False)
     def getLayers(self):
         return self.config.num_hidden_layers
 #roberta-base - 12 layer
@@ -85,6 +91,9 @@ class DFQA(DistilBertForQuestionAnswering):
         self.config.n_layers = newct #self
         # self.distilbert.config.n_layers = newct #bertmodel
         #encoder does not seem to have config
+    def dupeFirstN(self, n):
+        for i in reversed(range(n)):
+            self.dupeLayer(i, i, link = False)
     def getLayers(self):
         return self.config.n_layers
 #distilbert-base-uncased - 6 layers
@@ -106,6 +115,9 @@ class XLNFQA(XLNetForQuestionAnswering):
         self.config.n_layer = newct #self
         # self.transformer.config.n_layers = newct #bertmodel
         #encoder does not seem to have config
+    def dupeFirstN(self, n):
+        for i in reversed(range(n)):
+            self.dupeLayer(i, i, link = False)
     def getLayers(self):
         return self.config.n_layer
 #xlnet-base-cased
@@ -140,6 +152,9 @@ class XLMFQA(XLMForQuestionAnswering):
         self.config.n_layers = newct #self
         # self.transformer.config.n_layers = newct #bertmodel
         #encoder does not seem to have config
+    def dupeFirstN(self, n):
+        for i in reversed(range(n)):
+            self.dupeLayer(i, i, link = False)
     def getLayers(self):
         return self.config.n_layers
 ##Must duplicate self.transformer.attentions/layer_norm1/ffns/layer_norm2

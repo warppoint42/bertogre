@@ -1,0 +1,55 @@
+2020-03-10 20:47:49,428 WARNING Process rank: -1, device: cuda, n_gpu: 4, distributed training: False, 16-bits training: False
+2020-03-10 20:47:55,952 INFO Training/evaluation parameters Namespace(adam_epsilon=1e-08, albert_add=-1, albert_set=-1, bert_dup=6, cache_dir='', config_name='', data_dir=None, device=device(type='cuda'), do_eval=True, do_lower_case=True, do_train=True, doc_stride=128, eval_all_checkpoints=False, evaluate_during_training=False, fp16=False, fp16_opt_level='O1', gradient_accumulation_steps=1, lang_id=0, learning_rate=3e-05, local_rank=-1, logging_steps=500, max_answer_length=30, max_grad_norm=1.0, max_query_length=64, max_seq_length=384, max_steps=-1, model_name='bertd6_', model_name_or_path='bert-base-uncased', model_type='bfqa', n_best_size=5, n_gpu=4, no_cuda=False, null_score_diff_threshold=0.0, num_train_epochs=3.0, output_dir='save/bertd6', overwrite_cache=False, overwrite_output_dir=True, per_gpu_eval_batch_size=8, per_gpu_train_batch_size=8, predict_file='data/dev-v2.0.json', project_dir='logs/', save_steps=500, seed=42, server_ip='', server_port='', threads=32, tokenizer_name='', train_file='data/train-v2.0.json', verbose_logging=False, version_2_with_negative=True, warmup_steps=0, weight_decay=0.0)
+2020-03-10 20:47:55,953 INFO Loading features from cached file ./cached_train_bert-base-uncased_384
+2020-03-10 20:48:26,241 INFO NUMBER PARAMS: 116571650
+2020-03-10 20:48:26,245 INFO ***** Running training *****
+2020-03-10 20:48:26,245 INFO   Num examples = 131944
+2020-03-10 20:48:26,246 INFO   Num Epochs = 3
+2020-03-10 20:48:26,246 INFO   Instantaneous batch size per GPU = 8
+2020-03-10 20:48:26,246 INFO   Total train batch size (w. parallel, distributed & accumulation) = 32
+2020-03-10 20:48:26,246 INFO   Gradient Accumulation steps = 1
+2020-03-10 20:48:26,246 INFO   Total optimization steps = 12372
+2020-03-10 20:58:42,468 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-500
+2020-03-10 20:58:43,253 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-500
+2020-03-10 21:08:55,427 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-1000
+2020-03-10 21:08:56,207 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-1000
+2020-03-10 21:19:09,362 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-1500
+2020-03-10 21:19:10,130 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-1500
+2020-03-10 21:29:23,669 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-2000
+2020-03-10 21:29:24,448 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-2000
+2020-03-10 21:39:37,945 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-2500
+2020-03-10 21:39:38,715 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-2500
+2020-03-10 21:49:52,536 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-3000
+2020-03-10 21:49:53,310 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-3000
+2020-03-10 22:00:07,911 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-3500
+2020-03-10 22:00:08,685 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-3500
+2020-03-10 22:10:22,895 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-4000
+2020-03-10 22:10:23,661 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-4000
+2020-03-10 22:20:37,737 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-4500
+2020-03-10 22:20:38,501 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-4500
+2020-03-10 22:30:53,028 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-5000
+2020-03-10 22:30:53,800 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-5000
+2020-03-10 22:41:08,851 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-5500
+2020-03-10 22:41:09,626 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-5500
+2020-03-10 22:51:24,338 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-6000
+2020-03-10 22:51:25,111 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-6000
+2020-03-10 23:01:39,916 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-6500
+2020-03-10 23:01:40,714 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-6500
+2020-03-10 23:11:55,658 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-7000
+2020-03-10 23:11:56,424 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-7000
+2020-03-10 23:22:11,408 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-7500
+2020-03-10 23:22:12,182 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-7500
+2020-03-10 23:32:27,274 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-8000
+2020-03-10 23:32:28,039 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-8000
+2020-03-10 23:42:42,178 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-8500
+2020-03-10 23:42:42,941 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-8500
+2020-03-10 23:52:56,977 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-9000
+2020-03-10 23:52:57,752 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-9000
+2020-03-11 00:03:12,039 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-9500
+2020-03-11 00:03:12,807 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-9500
+2020-03-11 00:13:27,251 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-10000
+2020-03-11 00:13:28,024 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-10000
+2020-03-11 00:23:42,203 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-10500
+2020-03-11 00:23:42,971 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-10500
+2020-03-11 00:33:57,755 INFO Saving model checkpoint to save/bertd6/bertd6_checkpoint-11000
+2020-03-11 00:33:58,535 INFO Saving optimizer and scheduler states to save/bertd6/bertd6_checkpoint-11000

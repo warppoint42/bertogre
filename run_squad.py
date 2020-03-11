@@ -122,7 +122,8 @@ def train(args, train_dataset, model, tokenizer):
     aabool = args.albert_add > 0
     asbool = args.albert_set > -1
     bbool = args.bert_dup > -1
-    sptot = aabool + asbool + bbool
+    bnbool = args.bert_dup_n > 0
+    sptot = aabool + asbool + bbool + bnbool
     if sptot > 1:
         raise ValueError("Too many duplication arguments given.")
 
@@ -139,11 +140,16 @@ def train(args, train_dataset, model, tokenizer):
                 model.setLayers(args.albert_set)
         else:
             raise TypeError("Layer duplication called on unsupported model.")
-    if bbool:
+    if bbool or bnbool:
         if args.model_type in ["bfqa", "dfqa", "rfqa", "xlmfqa", "xlnfqa"]:
-            model.dupeLayer(args.bert_dup, args.bert_dup, False)
+            if bbool:
+                model.dupeLayer(args.bert_dup, args.bert_dup, False)
+            if bnbool:
+                model.dupeFirstN(args.bert_dup_n)
         else:
             raise TypeError("Layer duplication called on unsupported model.")
+
+    logger.info("NUMBER PARAMS: " + str(get_trainable_params(model)))
 
     """ Train the model """
     if args.local_rank in [-1, 0]:
@@ -494,7 +500,7 @@ def evaluate(args, model, tokenizer, prefix=""):
         + output_prediction_file + "> " + submission_file)
 
     if args.project_dir:
-        submission_file = os.path.join(args.project_dir, model_name + eval_type + "_submission.csv")
+        submission_file = os.path.join(args.project_dir, args.model_name + eval_type + "_submission.csv")
         os.system("jq -r '[\"Id\", \"Predicted\"], (to_entries | .[] | [.key, .value]) | @csv' " \
             + output_prediction_file + "> " + submission_file)
     
@@ -642,6 +648,10 @@ def main():
     parser.add_argument(
         "--bert_dup", default=-1, type=int, 
         help="(optional, non-afqa only) duplicates layer n of a Bert model with the new layer next to the original before training "
+    )
+    parser.add_argument(
+        "--bert_dup_n", default=-1, type=int, 
+        help="(optional, non-afqa only) duplicates first n layers of a Bert model with the new layer next to the original before training "
     )
 
 
