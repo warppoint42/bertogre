@@ -1,0 +1,27 @@
+2020-03-11 09:58:14,550 WARNING Process rank: -1, device: cuda, n_gpu: 4, distributed training: False, 16-bits training: False
+2020-03-11 09:58:20,286 INFO Training/evaluation parameters Namespace(adam_epsilon=1e-08, albert_add=-1, albert_set=-1, bert_dup=-1, bert_dup_n=-1, cache_dir='', config_name='', data_dir=None, device=device(type='cuda'), do_eval=True, do_lower_case=False, do_train=True, doc_stride=128, eval_all_checkpoints=False, evaluate_during_training=False, fp16=False, fp16_opt_level='O1', gradient_accumulation_steps=1, lang_id=0, learning_rate=3e-05, local_rank=-1, logging_steps=500, max_answer_length=30, max_grad_norm=1.0, max_query_length=64, max_seq_length=384, max_steps=-1, model_name='xlnetbase_', model_name_or_path='xlnet-base-cased', model_type='xlnfqa', n_best_size=5, n_gpu=4, no_cuda=False, null_score_diff_threshold=0.0, num_train_epochs=3.0, output_dir='save/xlnetbase', overwrite_cache=False, overwrite_output_dir=False, per_gpu_eval_batch_size=8, per_gpu_train_batch_size=8, predict_file='data/dev-v2.0.json', project_dir='logs/', save_steps=8000, seed=42, server_ip='', server_port='', threads=32, tokenizer_name='', train_file='data/train-v2.0.json', verbose_logging=False, version_2_with_negative=True, warmup_steps=0, weight_decay=0.0)
+2020-03-11 09:58:20,288 INFO Creating features from dataset file at .
+2020-03-11 10:00:49,915 INFO Saving features into cached file ./cached_train_xlnet-base-cased_384
+2020-03-11 10:04:50,935 INFO NUMBER PARAMS: 119083010
+2020-03-11 10:04:50,940 INFO ***** Running training *****
+2020-03-11 10:04:50,940 INFO   Num examples = 132552
+2020-03-11 10:04:50,941 INFO   Num Epochs = 3
+2020-03-11 10:04:50,942 INFO   Instantaneous batch size per GPU = 8
+2020-03-11 10:04:50,942 INFO   Total train batch size (w. parallel, distributed & accumulation) = 32
+2020-03-11 10:04:50,942 INFO   Gradient Accumulation steps = 1
+2020-03-11 10:04:50,942 INFO   Total optimization steps = 12429
+2020-03-11 16:38:31,307 INFO Saving model checkpoint to save/xlnetbase/xlnetbase_checkpoint-8000
+2020-03-11 16:38:32,130 INFO Saving optimizer and scheduler states to save/xlnetbase/xlnetbase_checkpoint-8000
+2020-03-11 20:16:37,161 INFO Saving model checkpoint to save/xlnetbase/xlnetbase_checkpoint-12430
+2020-03-11 20:16:37,971 INFO Saving optimizer and scheduler states to save/xlnetbase/xlnetbase_checkpoint-12430
+2020-03-11 20:16:37,976 INFO  global_step = 12430, average loss = 9.182898530396603e+29
+2020-03-11 20:16:37,976 INFO Saving model checkpoint to save/xlnetbase
+2020-03-11 20:16:41,151 INFO Loading checkpoints saved during training for evaluation
+2020-03-11 20:16:41,152 INFO Evaluate the following checkpoints: ['save/xlnetbase']
+2020-03-11 20:16:43,791 INFO Creating features from dataset file at .
+2020-03-11 20:16:51,944 INFO Saving features into cached file ./cached_dev_xlnet-base-cased_384
+2020-03-11 20:17:04,152 INFO ***** Running evaluation  *****
+2020-03-11 20:17:04,153 INFO   Num examples = 6460
+2020-03-11 20:17:04,153 INFO   Batch size = 32
+2020-03-11 20:21:44,589 INFO   Evaluation done in total 280.436015 secs (0.043411 sec per example)
+2020-03-11 20:21:48,116 INFO Results: {'exact': 37.57815070746956, 'HasAns_total': 2910, 'NoAns_total': 3168, 'best_exact_thresh': 0.0, 'NoAns_f1': 72.03282828282828, 'best_f1': 52.122408687068116, 'f1': 37.99280113108293, 'best_exact': 52.122408687068116, 'best_f1_thresh': 0.0, 'HasAns_f1': 0.9347921906261123, 'total': 6078, 'HasAns_exact': 0.06872852233676977, 'NoAns_exact': 72.03282828282828}
