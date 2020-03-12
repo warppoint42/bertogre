@@ -113,6 +113,7 @@ class XLNFQA(XLNetForQuestionAnswering):
         oldct = self.config.n_layer
         newct = oldct + 1
         self.config.n_layer = newct #self
+        self.n_layer = newct
         # self.transformer.config.n_layers = newct #bertmodel
         #encoder does not seem to have config
     def dupeFirstN(self, n):
