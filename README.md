@@ -15,4 +15,8 @@ Additional arguments: \
     --albert_add [n] - (optional, afqa only) adds n layers to Albert before training \
     --albert_set [n] - (optional, afqa only) sets Albert to have n layers before training \
     --bert_dup [n] - (optional, non-afqa only) duplicates layer n of a Bert model with the new layer next to the original before training \
+    --bert_dup_n [n] - (optional, non-afqa only) duplicates first n of a Bert model with the new layers next to the originals before training 
     --project_dir [path] - (optional) outputs submissions csv and log file to a different folder
+   
+   
+Not tested on XLM. XLNet implementation in the original run_squad.py, and thus our version, is suspected to be faulty due to incorrect preprocessing, as per https://github.com/huggingface/transformers/issues/947.

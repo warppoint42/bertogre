@@ -1,0 +1,25 @@
+2020-03-11 17:55:25,343 WARNING Process rank: -1, device: cuda, n_gpu: 4, distributed training: False, 16-bits training: False
+2020-03-11 17:55:27,955 INFO Training/evaluation parameters Namespace(adam_epsilon=1e-08, albert_add=-1, albert_set=17, bert_dup=-1, bert_dup_n=-1, cache_dir='', config_name='', data_dir=None, device=device(type='cuda'), do_eval=True, do_lower_case=True, do_train=True, doc_stride=128, eval_all_checkpoints=False, evaluate_during_training=False, fp16=False, fp16_opt_level='O1', gradient_accumulation_steps=1, lang_id=0, learning_rate=3e-05, local_rank=-1, logging_steps=500, max_answer_length=30, max_grad_norm=1.0, max_query_length=64, max_seq_length=384, max_steps=-1, model_name='albert17_', model_name_or_path='albert-base-v2', model_type='afqa', n_best_size=5, n_gpu=4, no_cuda=False, null_score_diff_threshold=0.0, num_train_epochs=3.0, output_dir='save/albert17', overwrite_cache=False, overwrite_output_dir=False, per_gpu_eval_batch_size=8, per_gpu_train_batch_size=8, predict_file='data/dev-v2.0.json', project_dir='logs/', save_steps=8000, seed=42, server_ip='', server_port='', threads=32, tokenizer_name='', train_file='data/train-v2.0.json', verbose_logging=False, version_2_with_negative=True, warmup_steps=0, weight_decay=0.0)
+2020-03-11 17:55:27,956 INFO Loading features from cached file ./cached_train_albert-base-v2_384
+2020-03-11 17:56:01,292 INFO NUMBER PARAMS: 11685122
+2020-03-11 17:56:01,295 INFO ***** Running training *****
+2020-03-11 17:56:01,295 INFO   Num examples = 132198
+2020-03-11 17:56:01,295 INFO   Num Epochs = 3
+2020-03-11 17:56:01,296 INFO   Instantaneous batch size per GPU = 8
+2020-03-11 17:56:01,296 INFO   Total train batch size (w. parallel, distributed & accumulation) = 32
+2020-03-11 17:56:01,296 INFO   Gradient Accumulation steps = 1
+2020-03-11 17:56:01,296 INFO   Total optimization steps = 12396
+2020-03-11 21:45:38,407 INFO Saving model checkpoint to save/albert17/albert17_checkpoint-8000
+2020-03-11 21:45:38,487 INFO Saving optimizer and scheduler states to save/albert17/albert17_checkpoint-8000
+2020-03-11 23:51:45,346 INFO Saving model checkpoint to save/albert17/albert17_checkpoint-12397
+2020-03-11 23:51:45,423 INFO Saving optimizer and scheduler states to save/albert17/albert17_checkpoint-12397
+2020-03-11 23:51:45,426 INFO  global_step = 12397, average loss = 0.7066593943645303
+2020-03-11 23:51:45,426 INFO Saving model checkpoint to save/albert17
+2020-03-11 23:51:45,945 INFO Loading checkpoints saved during training for evaluation
+2020-03-11 23:51:45,946 INFO Evaluate the following checkpoints: ['save/albert17']
+2020-03-11 23:51:46,379 INFO Loading features from cached file ./cached_dev_albert-base-v2_384
+2020-03-11 23:51:47,544 INFO ***** Running evaluation  *****
+2020-03-11 23:51:47,545 INFO   Num examples = 6398
+2020-03-11 23:51:47,545 INFO   Batch size = 32
+2020-03-11 23:53:59,277 INFO   Evaluation done in total 131.731661 secs (0.020590 sec per example)
+2020-03-11 23:54:09,192 INFO Results: {'NoAns_exact': 82.44949494949495, 'total': 6078, 'NoAns_total': 3168, 'best_exact_thresh': 0.0, 'exact': 79.31885488647582, 'HasAns_total': 2910, 'f1': 82.49096428999766, 'NoAns_f1': 82.44949494949495, 'HasAns_exact': 75.91065292096219, 'best_f1': 82.49096428999768, 'best_exact': 79.31885488647582, 'HasAns_f1': 82.53611029367907, 'best_f1_thresh': 0.0}
