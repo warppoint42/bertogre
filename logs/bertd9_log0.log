@@ -1,0 +1,25 @@
+2020-03-13 07:15:58,100 WARNING Process rank: -1, device: cuda, n_gpu: 4, distributed training: False, 16-bits training: False
+2020-03-13 07:16:03,841 INFO Training/evaluation parameters Namespace(adam_epsilon=1e-08, albert_add=-1, albert_set=-1, bert_dup=9, bert_dup_n=-1, cache_dir='', config_name='', data_dir=None, device=device(type='cuda'), do_eval=True, do_lower_case=True, do_train=True, doc_stride=128, eval_all_checkpoints=False, evaluate_during_training=False, fp16=False, fp16_opt_level='O1', gradient_accumulation_steps=1, lang_id=0, learning_rate=3e-05, local_rank=-1, logging_steps=500, max_answer_length=30, max_grad_norm=1.0, max_query_length=64, max_seq_length=384, max_steps=-1, model_name='bertd9_', model_name_or_path='bert-base-uncased', model_type='bfqa', n_best_size=5, n_gpu=4, no_cuda=False, null_score_diff_threshold=0.0, num_train_epochs=3.0, output_dir='save/bertd9', overwrite_cache=False, overwrite_output_dir=False, per_gpu_eval_batch_size=8, per_gpu_train_batch_size=8, predict_file='data/dev-v2.0.json', project_dir='logs/', save_steps=8000, seed=42, server_ip='', server_port='', threads=32, tokenizer_name='', train_file='data/train-v2.0.json', verbose_logging=False, version_2_with_negative=True, warmup_steps=0, weight_decay=0.0)
+2020-03-13 07:16:03,843 INFO Loading features from cached file ./cached_train_bert-base-uncased_384
+2020-03-13 07:16:35,964 INFO NUMBER PARAMS: 116571650
+2020-03-13 07:16:35,968 INFO ***** Running training *****
+2020-03-13 07:16:35,968 INFO   Num examples = 131944
+2020-03-13 07:16:35,969 INFO   Num Epochs = 3
+2020-03-13 07:16:35,969 INFO   Instantaneous batch size per GPU = 8
+2020-03-13 07:16:35,969 INFO   Total train batch size (w. parallel, distributed & accumulation) = 32
+2020-03-13 07:16:35,969 INFO   Gradient Accumulation steps = 1
+2020-03-13 07:16:35,970 INFO   Total optimization steps = 12372
+2020-03-13 10:30:43,423 INFO Saving model checkpoint to save/bertd9/bertd9_checkpoint-8000
+2020-03-13 10:30:44,230 INFO Saving optimizer and scheduler states to save/bertd9/bertd9_checkpoint-8000
+2020-03-13 12:15:11,219 INFO Saving model checkpoint to save/bertd9/bertd9_checkpoint-12373
+2020-03-13 12:15:11,976 INFO Saving optimizer and scheduler states to save/bertd9/bertd9_checkpoint-12373
+2020-03-13 12:15:11,979 INFO  global_step = 12373, average loss = 0.8886683859436281
+2020-03-13 12:15:11,979 INFO Saving model checkpoint to save/bertd9
+2020-03-13 12:15:15,241 INFO Loading checkpoints saved during training for evaluation
+2020-03-13 12:15:15,241 INFO Evaluate the following checkpoints: ['save/bertd9']
+2020-03-13 12:15:18,050 INFO Loading features from cached file ./cached_dev_bert-base-uncased_384
+2020-03-13 12:15:18,977 INFO ***** Running evaluation  *****
+2020-03-13 12:15:18,978 INFO   Num examples = 6372
+2020-03-13 12:15:18,978 INFO   Batch size = 32
+2020-03-13 12:17:14,856 INFO   Evaluation done in total 115.877933 secs (0.018185 sec per example)
+2020-03-13 12:17:24,732 INFO Results: {'NoAns_exact': 67.99242424242425, 'best_exact': 71.09246462652189, 'best_exact_thresh': 0.0, 'NoAns_total': 3168, 'HasAns_total': 2910, 'best_f1': 74.19956356462023, 'HasAns_exact': 74.39862542955326, 'exact': 71.05955906548206, 'total': 6078, 'NoAns_f1': 67.99242424242425, 'HasAns_f1': 80.88829805696278, 'f1': 74.16665800358035, 'best_f1_thresh': 0.0}
