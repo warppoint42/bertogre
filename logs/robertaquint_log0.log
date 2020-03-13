@@ -1,0 +1,27 @@
+2020-03-12 21:07:50,069 WARNING Process rank: -1, device: cuda, n_gpu: 4, distributed training: False, 16-bits training: False
+2020-03-12 21:08:05,657 INFO Training/evaluation parameters Namespace(adam_epsilon=1e-08, albert_add=-1, albert_set=-1, bert_dup=-1, bert_dup_n=5, cache_dir='', config_name='', data_dir=None, device=device(type='cuda'), do_eval=True, do_lower_case=True, do_train=True, doc_stride=128, eval_all_checkpoints=False, evaluate_during_training=False, fp16=False, fp16_opt_level='O1', gradient_accumulation_steps=1, lang_id=0, learning_rate=3e-05, local_rank=-1, logging_steps=500, max_answer_length=30, max_grad_norm=1.0, max_query_length=64, max_seq_length=384, max_steps=-1, model_name='robertaquint_', model_name_or_path='roberta-base', model_type='rfqa', n_best_size=5, n_gpu=4, no_cuda=False, null_score_diff_threshold=0.0, num_train_epochs=3.0, output_dir='save/robertaquint', overwrite_cache=False, overwrite_output_dir=False, per_gpu_eval_batch_size=8, per_gpu_train_batch_size=8, predict_file='data/dev-v2.0.json', project_dir='logs/', save_steps=8000, seed=42, server_ip='', server_port='', threads=32, tokenizer_name='', train_file='data/train-v2.0.json', verbose_logging=False, version_2_with_negative=True, warmup_steps=0, weight_decay=0.0)
+2020-03-12 21:08:05,659 INFO Creating features from dataset file at .
+2020-03-12 21:10:48,457 INFO Saving features into cached file ./cached_train_roberta-base_384
+2020-03-12 21:14:35,000 INFO NUMBER PARAMS: 160086530
+2020-03-12 21:14:35,005 INFO ***** Running training *****
+2020-03-12 21:14:35,006 INFO   Num examples = 135860
+2020-03-12 21:14:35,007 INFO   Num Epochs = 3
+2020-03-12 21:14:35,007 INFO   Instantaneous batch size per GPU = 8
+2020-03-12 21:14:35,007 INFO   Total train batch size (w. parallel, distributed & accumulation) = 32
+2020-03-12 21:14:35,007 INFO   Gradient Accumulation steps = 1
+2020-03-12 21:14:35,007 INFO   Total optimization steps = 12738
+2020-03-13 02:52:58,005 INFO Saving model checkpoint to save/robertaquint/robertaquint_checkpoint-8000
+2020-03-13 02:52:59,115 INFO Saving optimizer and scheduler states to save/robertaquint/robertaquint_checkpoint-8000
+2020-03-13 06:13:25,929 INFO Saving model checkpoint to save/robertaquint/robertaquint_checkpoint-12739
+2020-03-13 06:13:27,011 INFO Saving optimizer and scheduler states to save/robertaquint/robertaquint_checkpoint-12739
+2020-03-13 06:13:27,015 INFO  global_step = 12739, average loss = 0.9624810497311503
+2020-03-13 06:13:27,015 INFO Saving model checkpoint to save/robertaquint
+2020-03-13 06:13:33,534 INFO Loading checkpoints saved during training for evaluation
+2020-03-13 06:13:33,534 INFO Evaluate the following checkpoints: ['save/robertaquint']
+2020-03-13 06:13:39,316 INFO Creating features from dataset file at .
+2020-03-13 06:13:46,860 INFO Saving features into cached file ./cached_dev_roberta-base_384
+2020-03-13 06:13:58,412 INFO ***** Running evaluation  *****
+2020-03-13 06:13:58,413 INFO   Num examples = 6731
+2020-03-13 06:13:58,413 INFO   Batch size = 32
+2020-03-13 06:17:29,156 INFO   Evaluation done in total 210.743080 secs (0.031309 sec per example)
+2020-03-13 06:17:38,370 INFO Results: {'NoAns_f1': 82.03914141414141, 'f1': 82.70173351687201, 'HasAns_exact': 76.83848797250859, 'NoAns_total': 3168, 'best_exact_thresh': 0.0, 'best_exact': 79.58209937479434, 'total': 6078, 'HasAns_total': 2910, 'best_f1': 82.73463907791192, 'best_f1_thresh': 0.0, 'HasAns_f1': 83.42307089881392, 'exact': 79.54919381375453, 'NoAns_exact': 82.03914141414141}
