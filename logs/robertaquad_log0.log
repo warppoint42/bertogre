@@ -1,0 +1,25 @@
+2020-03-13 02:55:48,065 WARNING Process rank: -1, device: cuda, n_gpu: 4, distributed training: False, 16-bits training: False
+2020-03-13 02:55:55,617 INFO Training/evaluation parameters Namespace(adam_epsilon=1e-08, albert_add=-1, albert_set=-1, bert_dup=-1, bert_dup_n=4, cache_dir='', config_name='', data_dir=None, device=device(type='cuda'), do_eval=True, do_lower_case=True, do_train=True, doc_stride=128, eval_all_checkpoints=False, evaluate_during_training=False, fp16=False, fp16_opt_level='O1', gradient_accumulation_steps=1, lang_id=0, learning_rate=3e-05, local_rank=-1, logging_steps=500, max_answer_length=30, max_grad_norm=1.0, max_query_length=64, max_seq_length=384, max_steps=-1, model_name='robertaquad_', model_name_or_path='roberta-base', model_type='rfqa', n_best_size=5, n_gpu=4, no_cuda=False, null_score_diff_threshold=0.0, num_train_epochs=3.0, output_dir='save/robertaquad', overwrite_cache=False, overwrite_output_dir=False, per_gpu_eval_batch_size=8, per_gpu_train_batch_size=8, predict_file='data/dev-v2.0.json', project_dir='logs/', save_steps=8000, seed=42, server_ip='', server_port='', threads=32, tokenizer_name='', train_file='data/train-v2.0.json', verbose_logging=False, version_2_with_negative=True, warmup_steps=0, weight_decay=0.0)
+2020-03-13 02:55:55,618 INFO Loading features from cached file ./cached_train_roberta-base_384
+2020-03-13 02:56:29,964 INFO NUMBER PARAMS: 152998658
+2020-03-13 02:56:29,968 INFO ***** Running training *****
+2020-03-13 02:56:29,968 INFO   Num examples = 135860
+2020-03-13 02:56:29,968 INFO   Num Epochs = 3
+2020-03-13 02:56:29,969 INFO   Instantaneous batch size per GPU = 8
+2020-03-13 02:56:29,969 INFO   Total train batch size (w. parallel, distributed & accumulation) = 32
+2020-03-13 02:56:29,969 INFO   Gradient Accumulation steps = 1
+2020-03-13 02:56:29,969 INFO   Total optimization steps = 12738
+2020-03-13 08:04:55,220 INFO Saving model checkpoint to save/robertaquad/robertaquad_checkpoint-8000
+2020-03-13 08:04:56,148 INFO Saving optimizer and scheduler states to save/robertaquad/robertaquad_checkpoint-8000
+2020-03-13 11:50:52,019 INFO Saving model checkpoint to save/robertaquad/robertaquad_checkpoint-12739
+2020-03-13 11:50:52,974 INFO Saving optimizer and scheduler states to save/robertaquad/robertaquad_checkpoint-12739
+2020-03-13 11:50:52,977 INFO  global_step = 12739, average loss = 0.9959304531575166
+2020-03-13 11:50:52,977 INFO Saving model checkpoint to save/robertaquad
+2020-03-13 11:50:58,771 INFO Loading checkpoints saved during training for evaluation
+2020-03-13 11:50:58,771 INFO Evaluate the following checkpoints: ['save/robertaquad']
+2020-03-13 11:51:04,271 INFO Loading features from cached file ./cached_dev_roberta-base_384
+2020-03-13 11:51:05,464 INFO ***** Running evaluation  *****
+2020-03-13 11:51:05,464 INFO   Num examples = 6731
+2020-03-13 11:51:05,464 INFO   Batch size = 32
+2020-03-13 11:54:17,900 INFO   Evaluation done in total 192.435290 secs (0.028589 sec per example)
+2020-03-13 11:54:26,452 INFO Results: {'total': 6078, 'NoAns_total': 3168, 'NoAns_f1': 81.72348484848484, 'HasAns_f1': 81.78841688287126, 'best_exact': 78.01908522540309, 'best_exact_thresh': 0.0, 'best_f1_thresh': 0.0, 'best_f1': 81.7545727425396, 'f1': 81.75457274253958, 'exact': 78.01908522540309, 'HasAns_exact': 73.98625429553265, 'NoAns_exact': 81.72348484848484, 'HasAns_total': 2910}
