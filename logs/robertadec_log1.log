@@ -9,3 +9,19 @@
 2020-03-13 11:06:45,309 INFO   Total train batch size (w. parallel, distributed & accumulation) = 24
 2020-03-13 11:06:45,309 INFO   Gradient Accumulation steps = 1
 2020-03-13 11:06:45,309 INFO   Total optimization steps = 16983
+2020-03-13 17:39:31,170 INFO Saving model checkpoint to save/robertadec/robertadec_checkpoint-8000
+2020-03-13 17:39:32,425 INFO Saving optimizer and scheduler states to save/robertadec/robertadec_checkpoint-8000
+2020-03-14 00:12:09,061 INFO Saving model checkpoint to save/robertadec/robertadec_checkpoint-16000
+2020-03-14 00:12:10,319 INFO Saving optimizer and scheduler states to save/robertadec/robertadec_checkpoint-16000
+2020-03-14 01:00:24,109 INFO Saving model checkpoint to save/robertadec/robertadec_checkpoint-16984
+2020-03-14 01:00:25,409 INFO Saving optimizer and scheduler states to save/robertadec/robertadec_checkpoint-16984
+2020-03-14 01:00:25,414 INFO  global_step = 16984, average loss = 1.0371722044678535
+2020-03-14 01:00:25,414 INFO Saving model checkpoint to save/robertadec
+2020-03-14 01:00:32,900 INFO Loading checkpoints saved during training for evaluation
+2020-03-14 01:00:32,900 INFO Evaluate the following checkpoints: ['save/robertadec']
+2020-03-14 01:00:39,861 INFO Loading features from cached file ./cached_dev_roberta-base_384
+2020-03-14 01:00:40,934 INFO ***** Running evaluation  *****
+2020-03-14 01:00:40,934 INFO   Num examples = 6731
+2020-03-14 01:00:40,934 INFO   Batch size = 32
+2020-03-14 01:05:14,406 INFO   Evaluation done in total 273.471696 secs (0.040629 sec per example)
+2020-03-14 01:05:23,213 INFO Results: {'NoAns_total': 3168, 'HasAns_total': 2910, 'best_exact_thresh': 0.0, 'exact': 78.90753537347811, 'HasAns_f1': 83.07260075964315, 'total': 6078, 'best_exact': 78.90753537347811, 'best_f1': 82.35295627024696, 'NoAns_f1': 81.6919191919192, 'NoAns_exact': 81.6919191919192, 'f1': 82.35295627024699, 'best_f1_thresh': 0.0, 'HasAns_exact': 75.87628865979381}
